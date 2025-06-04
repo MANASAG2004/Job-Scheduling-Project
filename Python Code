@@ -1,0 +1,59 @@
+# job_scheduler.py
+
+import threading
+import time
+from datetime import datetime, timedelta
+import schedule
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
+
+class JobScheduler:
+    def __init__(self):
+        pass  # Removed unused jobs list
+
+    def print_hello_world(self):
+        logging.info("Hello World")
+
+    def schedule_every_30_seconds(self):
+        schedule.every(30).seconds.do(self.print_hello_world)
+
+    def schedule_daily(self, hour, minute):
+        try:
+            schedule.every().day.at(f"{hour:02d}:{minute:02d}").do(self.print_hello_world)
+        except schedule.ScheduleValueError as e:
+            logging.error(f"Invalid daily time value: {e}")
+
+    def schedule_weekly(self, weekday, hour, minute):
+        # Validate weekday
+        valid_weekdays = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+        if weekday.lower() not in valid_weekdays:
+            logging.error(f"Invalid weekday: '{weekday}'. Must be one of {valid_weekdays}.")
+            return
+        try:
+            getattr(schedule.every(), weekday.lower()).at(f"{hour:02d}:{minute:02d}").do(self.print_hello_world)
+        except schedule.ScheduleValueError as e:
+            logging.error(f"Invalid weekly time value: {e}")
+
+    def run_pending(self):
+        try:
+            while True:
+                schedule.run_pending()
+                time.sleep(1)
+        except KeyboardInterrupt:
+            logging.info("Scheduler stopped manually.")
+
+
+def main():
+    scheduler = JobScheduler()
+
+    # Example job configuration: every 30 seconds
+    scheduler.schedule_every_30_seconds()
+
+    logging.info("Scheduler started...")
+    scheduler.run_pending()
+
+
+if __name__ == '__main__':
+    main()
