@@ -1,0 +1,48 @@
+# job_scheduler.py
+
+import threading
+import time
+from datetime import datetime, timedelta
+import schedule
+
+class JobScheduler:
+    def __init__(self):
+        self.jobs = []
+
+    def print_hello_world(self):
+        print(f"Hello World - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+    def schedule_hourly(self, minute):
+        def job():
+            now = datetime.now()
+            if now.minute == minute:
+                self.print_hello_world()
+        schedule.every().hour.at(f":{minute:02d}").do(job)
+
+    def schedule_daily(self, hour, minute):
+        schedule.every().day.at(f"{hour:02d}:{minute:02d}").do(self.print_hello_world)
+
+    def schedule_weekly(self, weekday, hour, minute):
+        # weekday: "monday", "tuesday", etc.
+        getattr(schedule.every(), weekday).at(f"{hour:02d}:{minute:02d}").do(self.print_hello_world)
+
+    def run_pending(self):
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
+
+
+def main():
+    scheduler = JobScheduler()
+
+    # Example job configurations
+    scheduler.schedule_hourly(minute=30)            # Every hour at 30th minute
+    scheduler.schedule_daily(hour=14, minute=0)      # Every day at 2:00 PM
+    scheduler.schedule_weekly('monday', 9, 15)       # Every Monday at 9:15 AM
+
+    print("Scheduler started...")
+    scheduler.run_pending()
+
+
+if __name__ == '__main__':
+    main()
