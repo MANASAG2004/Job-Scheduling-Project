@@ -1,0 +1,30 @@
+import schedule
+import time
+import threading
+
+# Simulated function to send an email reminder
+def send_email_reminder():
+    print("📧 Reminder email sent to users!")
+
+# Function to run the scheduler continuously in a background thread
+def run_scheduler():
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+
+# Schedule the send_email_reminder to run every day at 9:00 AM
+schedule.every().day.at("09:00").do(send_email_reminder)
+
+# Start scheduler in a separate thread
+scheduler_thread = threading.Thread(target=run_scheduler)
+scheduler_thread.daemon = True
+scheduler_thread.start()
+
+print("Scheduler started. Waiting to send email reminders...")
+
+# Keep the main program running so the scheduler can work
+try:
+    while True:
+        time.sleep(10)
+except KeyboardInterrupt:
+    print("Scheduler stopped.")
