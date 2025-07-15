@@ -23,7 +23,7 @@ class JobScheduler:
         schedule.every().day.at(f"{hour:02d}:{minute:02d}").do(self.print_hello_world)
 
     def schedule_weekly(self, weekday, hour, minute):
-        # weekday: "monday", "tuesday", etc.
+        # weekday: "monday", "tuesdayyyyyy", etc.
         getattr(schedule.every(), weekday).at(f"{hour:02d}:{minute:02d}").do(self.print_hello_world)
 
     def run_pending(self):
